@@ -1,0 +1,22 @@
+Please do not place your name anywhere in this file.
+
+You will place all the answers for your exam in this file.
+
+Please place answers to the exam questions in order and clearly mark which question
+you are answering.
+
+=-=-=-=-=-=-=-=
+Problem 1:
+
+A.
+B.
+etc
+
+=-=-=-=-=-=-=-=
+Problem 2:
+
+A.
+B.
+etc
+
+=-=-=-=-=-=-=-=

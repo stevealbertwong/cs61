@@ -1,0 +1,42 @@
+r01-byte
+r02-directblock     Adds O_DIRECT flag; reads 512 bytes rather than 1.
+                    + Fewer reads suggests faster, but
+                    + O_DIRECT suggests that we aren't using the cache.
+                    * I'm going to guess that O_DIRECT incurs the
+                      bigger penalty
+                    directblock is 4X faster (need to try this on mac)
+r03-block           This removes O_DIRECT from r02
+                    This ought to be a lot faster!
+                    + 10.2 X improvement (over directblock)
+                    + 15X relative to r01
+r04-directbyte      Fails!  You can only do O_DIRECT on blocks
+r05-stdiobyte       Like r01 but uses stdio
+                    + ~20X r01
+r06-stdioblock      Use stdio and read 512 byte blocks
+                    + 3X stdiobyte
+r07-mmapbyte        Mmaps the file in
+                    + ~7% faster than stdioblock
+                    + 3X faster than stdio byte
+                    + 20X faster than r01-byte
+r08-mmapblock       Mmaps but accesses 512 byte chunks 
+                    + ~3X faster than per byte
+r09-revbyte         Reads backwards 1 byte at a time; expect pigdog slow.
+                    70% of the performance of r01-byte.
+
+
+Some reasons that your single slot cache is:
+
+1. Faster than r05-stdiobyte: stdiobyte has to do a lot more work. It has to
+handle seeks, writes and all the other functionality in stdio. Sometimes
+special-purpose code can be faster, even if it is less flexible.
+
+2. Slower than r03-block: you are making 512 (BLOCKSIZE) function calls for
+each block, while r03-block makes only 1 call.
+
+The starting addresses of the first four blocks of a file assuming 16-byte
+blocks.
+
+00000000
+00010000
+00100000
+00110000

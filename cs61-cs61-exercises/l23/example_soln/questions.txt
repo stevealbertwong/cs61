@@ -1,0 +1,44 @@
+1. 3 MB
+
+2. Physical (4 MB versus 3 MB)
+
+3. 3 * 2^20 / 2^12 = 3 * (2 ^ 8) = 3 * 256 = 768
+
+4. 2^22 / 2 ^ 12 = 2 ^ 10 = 1024
+
+5. It maps 32 KB of physical memory into the kernel's address space.
+Interestingly, it maps the virtual addresses to the same physical
+addresses. This memory is read-only, accessible only to the operating
+system. It would be a good place to store the kernel's code and read-only
+data.
+
+6. Allocate 64 KB of memory to a process's page table, starting at the 
+PROC_START_ADDR. Allocate it at the top of memory; note that it is not
+writable. Perhaps this is the process's code segment.
+
+7. This allocates a page of RW data to a user process. It's a great place
+to store read-write data or a stack or a heap.
+
+8. This is a dumb call!  It refers to an address outside of the virtual
+address space!  It should return an error.
+
+9. virtual_memory_map(kernel_pagetable,
+    KERNEL_STACK_TOP - PAGESIZE, 0x200000, PAGESIZE, PTE_P | PTE_W );
+
+10. If a user process passes a pointer to the kernel, the kernel has to
+verify that the pointer is valid, so the kernel will want to check the
+mapping for the virtual address.
+
+11. The privilege bits are quite useful! It means you can create user processes
+by copying kernel page tables, which is convenient and it means you don't have
+to change page tables every time you go into/out of the kernel.
+
+12. log_printf or log_vprintf
+
+13. It would be fine for copying within a user process or within the kernel, but you would not want to use it for copying between address spaces. First,
+you need to validate the user's address; second, the filename could cross a
+page boundary, which would mean that it isn't contiguous in physical memory.
+
+14. Sharing code pages is just fine, and quite efficient!
+
+

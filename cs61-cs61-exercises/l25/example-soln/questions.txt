@@ -1,0 +1,10 @@
+1. If you forget to close the accepted fd in the parent, then you might run
+out of open files after about a thousand requests (1056).  If you got that
+right, then you might find that fork fails at some point, because you've
+created too many processes (this happens after about 3754 connections for us).
+
+2. Hmmm -- appeared to start running more quickly, but failed to allocate
+memory after a few hundred threads.
+
+3. The pool-based solution got to 200 quickly, but then slowed down to
+a *really* slow rate.

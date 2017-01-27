@@ -1,0 +1,21 @@
+1. The race condition is that you have an increment which is not an atomic
+operation; if two threads got in there at the same time, they could read
+the same value; update the value and each write back the same value, thereby
+incrementing it by 1 instead of 2.  We don't see this with only 2 threads
+because they alternate odds and evens. However, if we have multiple threads
+of each type, we might be able to make it happen.
+
+2-6: See the code in pingpong2-mutex.c
+
+7. If a pong thread runs and makes the value odd and then release the lock,
+it's possible for another pong thread to get the lock.  That thread will
+see that the count is odd and not be able to do anything. It's possible that
+it releases the lock and immediately reacquires it before any ping threads
+get to run.
+
+8-13: See the code in pingpong2-cv.c
+
+14-16: See the code in pingpong2-cvs.c
+
+17-: See dobby-soln.c
+

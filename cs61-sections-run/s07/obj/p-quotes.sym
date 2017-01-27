@@ -1,0 +1,17 @@
+000b8000 a console
+000b8ffc a cursorpos
+00100000 T process_main
+00100065 t string_putc
+00100082 T strlen
+001000b0 T strnlen
+001000f0 T strchr
+00100127 T rand
+00100170 T printer_vprintf
+001006a1 T vsnprintf
+001006f5 T snprintf
+00100940 r lower_digits.1414
+00100951 r upper_digits.1413
+00100962 r flag_chars
+00101000 D messages
+00101018 b rand_seed
+0010101c b rand_seed_set

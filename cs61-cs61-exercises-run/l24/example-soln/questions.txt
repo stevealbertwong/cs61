@@ -1,0 +1,57 @@
+4.1 badguy; line 100
+4.2 In run
+4.3 set the page table; set the stack pointer; pop the general purpose
+registers; pop es/ed; adjust the stack and iret
+4.4 iret is how you return from the operating system back into a user
+process.
+5 It runs in an infinite loop
+6. This time, "command" is set, so we compare to f, a, e, and b
+7. The OS sets a timer so that it knows it will get an interrupt -- when it
+handles that interrupt, the OS can do whatever it wants!
+(Place the breakpoint in the TIMER interrupt handler (line 209).:w
+8. We took an exception (#13).
+9. General Protection Fault: In this case, an unprivileged process tried to
+issue a privileged instruction.
+10. Any instructions that set system registers LIDT, LGDT.
+
+Find the exception/interrupt dispatch table:
+    interrupt_descriptors  0x50080
+    Which is TIMER INTERRUPT?
+        INT_TIMER = INT_HARDWARE + 0
+        INT_HARDWARE = 32
+
+        so 32 * 8 = 0x20 * 8 = 0x100
+        0x50080 + 0x100 = 0x50180
+
+        Let's try to replace that entry!
+
+OK, let's now look at how we figured out to change the
+interrupt handler itself to just loop infinitely!
+00040048 t sys49_int_handler
+
+We'd like to place an instruction there that jumps to itself.
+Write a 1-line assembly language file containing a single instruction
+that jumps back to itself.
+
+Now, assemble that:
+
+cc -c x.S
+
+Finally, use
+    objdump -D x.o
+to find the hex value of that instruction.
+    0xebfe
+
+Now, let's try to insert that at location 0x40048
+
+unsigned short *sp = (void *)0x40048;
+*sp = 0xfeeb;
+See p-badguy1.c for the code!
+
+Addresses for p in:
+
+allocator2: 0x141008
+allocator3: 0x181008
+allocator4: 0x1c1008
+
+See p-badguy2.c for the code!

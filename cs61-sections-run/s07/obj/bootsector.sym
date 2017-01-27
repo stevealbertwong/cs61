@@ -1,0 +1,15 @@
+00000001 a CR0_PE_ON
+00000008 a SEGSEL_BOOT_CODE
+00000010 a SEGSEL_BOOT_DATA
+00007c00 T boot_start
+00007c0d t seta20.1
+00007c17 t seta20.2
+00007c21 t real_to_prot
+00007c36 t protcseg
+00007c49 t spinloop
+00007c4c t gdt
+00007c64 t gdtdesc
+00007c6a T boot_waitdisk
+00007c78 T boot_readsect
+00007ccb T boot_readseg
+00007d17 T boot

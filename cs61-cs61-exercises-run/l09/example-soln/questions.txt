@@ -1,0 +1,17 @@
+1. How is the program writing the data to the file?
+    the write system call
+
+2. How many characters are we writing per call?
+    1
+
+3. What do each of the flags that we are passing to <code>open</code> do?
+            O_WRONLY -- open file for writing only
+            O_CREAT -- if the file does not exist, create it
+            O_TRUNC -- if the file has data in it, truncate that data
+            O_SYNC -- write all data synchronously through to the disk
+
+What has changed?
+    We removed the sync flag
+
+What should happen?
+    It should go faster

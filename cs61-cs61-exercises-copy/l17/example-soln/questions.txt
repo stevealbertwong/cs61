@@ -1,0 +1,24 @@
+1. alarm2.c seems like we could modify it just by calling waitpid instead of
+calling sleep.
+
+2. You can either make the child sleep shorter -- but doing so would require
+changing sleep to usleep (so you can sleep for some number of milliseconds).
+Or you can change the "0 seconds" in the itimer to be 1 second, making the
+parent wait 1.75 seconds.
+
+3. Find the race condition: If the child exits before the parent goes
+to sleep, the parent will sleep for the full time rather than exiting
+early because the child is done.
+
+4. waittimeout exhibits busy-waiting -- this is really bad!  If we make things
+run a bit longer, we ought to be able to run "top" and show that timeout is
+burning CPU like there is a reward.
+
+5. Unfortunately no -- there will still be a race condition between the
+moment you unblock signals and the moment you call sleep!
+
+6. The non-blocking waitpid is a nice idea, but again, because you can get
+the signal between the waitpid and the sleep you have a problem.  Fundamentally, we want to do two things at once -- check a condition (has
+the child exited) and then act on that condition, without the state of
+the condition changing between those two actions. Without some kind of
+mechanism to help us -- we can't do that!

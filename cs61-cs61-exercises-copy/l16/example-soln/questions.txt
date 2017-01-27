@@ -1,0 +1,64 @@
+1. see the cat_wrapper_out.c program - note that it has #define sections to address later questions.
+
+2. see cat_wrapper_in.c for the solution to this part.
+
+2b. If I redirect standard out, then the program's ouput goes to a file while
+strace's output goes to the console -- it makes it way easier to read!
+
+3. If you have redirected standard out before you fork, the child inherits
+the file descriptors and will therefore also write to the file; if you fork
+before you set up the redirection then the child will execute its own file
+descriptor dance and will still write to "cat.out," but the parent and child
+will have completely independent references to the file (they are not sharing
+file descriptors).
+
+Next Part: Fork meets A3
+1a. One root and 3 children: the root forks child 1; child 1 and the root 
+then both continue executing and each forks, producing children 2 and 3.
+
+1b. When the programs output to the console, standard IO flushes its cache
+on every newline. When writing to a file, it buffers as long as it can. So,
+when the child processes start up, they already have data in their standard
+IO buffers; when they finally exit and standard IO flushes its buffers, the
+buffers contain both the parent messages and the child messages.
+
+1c. The pipe acts just like a file, so standard IO's buffer is not flushed
+and you get the same output you got when you redirected standard out to a
+file.
+
+1d. If you remove the \n, then standard IO won't flush to the console either
+and you'll get the same output (without newlines) that you did when redirecting
+to a file.
+
+2a. forkmix: each string is 8 characters long; each process should print out
+each string 1 million times, so you should get 2 million lines and 16 million
+characters.
+
+2b. Yes -- I got the right number!
+
+3. forkmix2: Each program will write 8000000 characters, but they both write
+starting at offset 0, so you end up with only 7000000 characters and they
+may/may not alternate blocks.
+
+Pipe problems
+
+1) Head -10 stops reading from the pipe after 10 lines and closes it; then
+yes gets a SIGPIPE, which causes it to stop writing and it exits.
+
+2) echo writes "foo" to the pipe and then closes it; this causes wc to receive end of file, so it then closes its end of the pipe.
+
+3) cat runs until it reaches EOF in my-file; that causes cat to exit, which
+closes the pipe; only then can tail read from the end of the file and read
+back 4 lines at which point it exits because it is only printing four lines.
+
+4) Cat reads from /dev/null which immediately returns EOF, which causes cat
+to close the pipe; wc gets nothing and reports 0 for all fields
+
+5) If the parent and child share a pipe, then we can block the parent on a read
+to the pipe; when the child exits, its end of the pipe will close, which will
+cause the parent to get SIGPIPE, which it will interpret as the child exiting.
+
+The advantage of waitpid is that you get an exit status; you could imagine
+the child writing its status to the pipe before exiting to get the same effect.
+The disadvantage of the pipe is that it consumes kernel resources the entire
+time.
